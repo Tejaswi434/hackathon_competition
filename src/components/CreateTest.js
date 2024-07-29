@@ -1,135 +1,267 @@
 import axios from 'axios';
-import React, { useState } from 'react'
-import { useContext } from 'react'
-import {ToggleContext} from "../App.js"
+import React, { useState } from 'react';
+import { useContext } from 'react';
+import { ToggleContext } from "../App.js";
 import { useNavigate } from 'react-router-dom';
-function CreateTest() {
-    const navigate = useNavigate();
-    const fact = useContext(ToggleContext)
-    console.log(fact,"fact from context")
-    const [testName, setTestName] = useState('')
-    const [id, setId] = useState('')
-    const [subject, setSubject] = useState('')
-    const [topic, setTopic] = useState('')
-    const [selectedOption, setSelectedOption] = useState('');
-    const [questions, setQuestions] = useState('')
-    const getTestName = (e) =>[
-        setTestName(e.target.value)
-    ]
-    const getQuestion = (e)=>{
-        setQuestions(e.target.value)
-    }
-  const handleChange = (event) => {
-    setSelectedOption(event.target.value);
-  };
-    const getId = (e)=>{
-        setId(e.target.value)
-    }
-    const getSubject = (e)=>{
-        setSubject(e.target.value)
-    }
-    const getTopic = (e)=>{
-        setTopic(e.target.value)
-    }
-    const validate =()=>{ 
-            // console.log(fact)
-            if( testName!=='' &&  subject!=='' && topic!=='' && selectedOption!=='' &&questions!==''){
-                console.log("In If")
-                 handleCreateTest();
-            }
-            else{
-                //navigate("/studentRegister")
-                console.log("Im in else")
-                //handleCreateTest();
-                
-        
-                alert("Enter all the details");
-            }
-          }
-        
-    const handleCreateTest = async(e) =>{
-        e.preventDefault();
-      //  alert("Created test successfully");
-      try{
-        console.log(fact, questions)
-      const response = await axios.post("http://172.17.15.186:3006/addTest", {
-        fact, testName, subject, topic, questions
 
+function CreateTest() {
+  const navigate = useNavigate();
+  const [fact, testquestions, setTestquestions] = useContext(ToggleContext);
+  const [testName, setTestName] = useState('');
+  const [subject, setSubject] = useState('');
+  const [topic, setTopic] = useState('');
+  const [questions, setQuestions] = useState('');
+  const [loading, setLoading] = useState(false); // State for controlling the spinner
+  const [error, setError] = useState(''); // State for handling error messages
+
+  const getTestName = (e) => {
+    setTestName(e.target.value);
+  }
+
+  const getQuestion = (e) => {
+    setQuestions(e.target.value);
+  }
+
+  const getSubject = (e) => {
+    setSubject(e.target.value);
+  }
+
+  const getTopic = (e) => {
+    setTopic(e.target.value);
+  }
+
+  const handleCreateTest = async (e) => {
+    e.preventDefault();
+    setLoading(true); // Show spinner
+
+    try {
+      const response = await axios.post("http://172.17.15.186:3006/addTest", {
+        fact,
+        testName,
+        subject,
+        topic,
+        questions
       });
+
       if (response.status === 200) {
-        const data= response.data
-      //  <div> {data.map(each=><p>{each.question}</p>)} </div>
-      console.log(response.data)
-      alert("successfully created test")
+        const data = response.data;
+        setLoading(false);
+        setTestquestions(data);
+        console.log(data);
+        alert(response.data.response.Questions[0]);
+        navigate("/testquestions");
       } else {
-        alert("Credentials are incorrect. Enter valid credentials");
+        setError("Credentials are incorrect. Enter valid credentials");
       }
     } catch (error) {
-      alert("An error occurred. Please try again.");
+      setError("An error occurred. Please try again.");
+    } finally {
+      setLoading(false); // Hide spinner
     }
-    }
+  };
+
   return (
-    <div className='flex flex-row justify-center mt-40 '>
-      <div className="basis-2/5 ">
-    <img src="https://bigdataanalyticsnews.com/wp-content/uploads/2021/12/school-management.jpg"/>
-</div>
-<div  className="basis -3/5 ml-20  flex flex-col justify-center">
-      {/* <label className="text-m">Faculty Id</label>
-        <br/>
-            <input type="text" placeholder="Enter your id" 
-            onChange={getId}
-            className="border border-red-400 rounded"/> 
-            <br/> */}
-            <label className="text-m">Test Name</label>
-        <br/>
-            <input type="text" placeholder="Enter test name" 
-            onChange={getTestName}
-            className="border border-red-400 rounded"/> 
-            <br/>
-          
-            <label className="text-m">Subject</label>
-            <br/>
-     
-            <input type="text" placeholder="Enter your subject"   onChange={getSubject}
-            className="border border-red-400 rounded"/>
-            <br/>
-            <br/><br/>
-            <label className="text-m">Topic</label>
-            <br/>
-     
-            <input type="text" placeholder="Enter your topic"   onChange={getTopic}
-            className="border border-red-400 rounded"/>
-            <br/>
-            <br/><br/>
-            <label className="text-m">Number Of Questions</label>
-            <br/>
-     
-            <input type="text" placeholder="Enter no of questions"   onChange={getQuestion}
-            className="border border-red-400 rounded"/>
-            <br/>
-            <br/><br/>
-            {/* <label>Difficulty Label</label>
-            <select
-        className="block appearance-none w-full bg-white border border-gray-400 hover:border-gray-500 px-4 py-2 pr-8 rounded shadow leading-tight focus:outline-none focus:shadow-outline"
-        value={selectedOption}
-        onChange={handleChange} >
-        <option value="" disabled>Select Difficulty</option>
-        <option value="easy">Easy</option>
-        <option value="medium">Medium</option>
-        <option value="hard">Hard</option>
-      </select> */}
-            <button 
-            onClick = {handleCreateTest}
-            type="submit"
-             className="bg-red-400 text-white rounded px-2 mt-4 "
-             >Create Test
-             </button>
+    <div className='flex flex-row justify-center mt-40'>
+      <div className="basis-2/5">
+        <img src="https://bigdataanalyticsnews.com/wp-content/uploads/2021/12/school-management.jpg" alt="School management" />
+      </div>
+      <div className="basis-3/5 ml-20 flex flex-col justify-center">
+        <label className="text-m">Test Name</label>
+        <br />
+        <input type="text" placeholder="Enter test name"
+          onChange={getTestName}
+          className="border border-red-400 rounded w-2/5"
+        />
+        <br />
+        <label className="text-m">Subject</label>
+        <br />
+        <input type="text" placeholder="Enter your subject"
+          onChange={getSubject}
+          className="border border-red-400 rounded w-2/5"
+        />
+        <br /><br />
+        <label className="text-m">Topic</label>
+        <br />
+        <input type="text" placeholder="Enter your topic"
+          onChange={getTopic}
+          className="border border-red-400 rounded w-2/5"
+        />
+        <br /><br />
+        <label className="text-m">Number Of Questions</label>
+        <br />
+        <input type="text" placeholder="Enter no of questions"
+          onChange={getQuestion}
+          className="border border-red-400 rounded w-2/5"
+        />
+        <br /><br />
+        <button
+          onClick={handleCreateTest}
+          type="submit"
+          className={`bg-red-400 text-white rounded px-2 mt-4 w-2/5 flex items-center ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
+          disabled={loading} // Disable button when loading is true
+        >
+          {loading ? (
+            <svg className="animate-spin h-5 w-50 mr-3" viewBox="0 0 24 24">
+              <circle className="opacity-25" cx="42" cy="42" r="30" stroke="currentColor" strokeWidth="4"></circle>
+              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+          ) : (
+            'Create Test'
+          )}
+        </button>
+        {error && <p className="text-red-500 mt-2">{error}</p>}
+      </div>
     </div>
-    </div>
-  )
+  );
 }
 
-export default CreateTest
+export default CreateTest;
+
+
+
+
+
+// import axios from 'axios';
+// import React, { useState } from 'react'
+// import { useContext, createContext } from 'react'
+// import {ToggleContext} from "../App.js"
+// import { useNavigate } from 'react-router-dom';
+
+// function CreateTest() {
+//     const navigate = useNavigate();
+//     const [fact,testquestions,setTestquestions] = useContext(ToggleContext)
+//     console.log(fact,"fact from context")
+//     const [testName, setTestName] = useState('')
+//     const [id, setId] = useState('')
+//     const [subject, setSubject] = useState('')
+//     const [topic, setTopic] = useState('')
+//     const [selectedOption, setSelectedOption] = useState('');
+//     const [questions, setQuestions] = useState('')
+//     const getTestName = (e) =>[
+//         setTestName(e.target.value)
+//     ]
+//     const getQuestion = (e)=>{
+//         setQuestions(e.target.value)
+//     }
+//   const handleChange = (event) => {
+//     setSelectedOption(event.target.value);
+//   };
+//     const getId = (e)=>{
+//         setId(e.target.value)
+//     }
+//     const getSubject = (e)=>{
+//         setSubject(e.target.value)
+//     }
+//     const getTopic = (e)=>{
+//         setTopic(e.target.value)
+//     }
+//     var data=""
+//     const validate =()=>{ 
+//             // console.log(fact)
+//             if( testName!=='' &&  subject!=='' && topic!=='' && selectedOption!=='' &&questions!==''){
+//                 console.log("In If")
+//                  handleCreateTest();
+//             }
+//             else{
+//                 //navigate("/studentRegister")
+//                 console.log("Im in else")
+//                 //handleCreateTest();
+                
+        
+//                 alert("Enter all the details");
+//             }
+//           }
+        
+//     const handleCreateTest = async(e) =>{
+//         e.preventDefault();
+//       //  alert("Created test successfully");
+//       try{
+//         console.log(fact, questions)
+//       const response = await axios.post("http://172.17.15.186:3006/addTest", {
+//         fact, testName, subject, topic, questions
+
+//       });
+//       if (response.status === 200) {
+//         data= response.data
+//         setTestquestions(data)
+//       //  <div> {data.map(each=><p>{each.question}</p>)} </div>
+//       console.log(data)
+//       console.log("+++++++++++++")
+//       console.log(testquestions)
+//       alert(response.data.response.Questions[0]) 
+//       navigate("/testquestions");
+//       } else {
+//         alert("Credentials are incorrect. Enter valid credentials");
+//       }
+//     } catch (error) {
+//       alert("An error occurred. Please try again.");
+//     }
+//     }
+//   return (
+  
+//     <div className='flex flex-row justify-center mt-40 '>
+//       <div className="basis-2/5 ">
+//     <img src="https://bigdataanalyticsnews.com/wp-content/uploads/2021/12/school-management.jpg"/>
+// </div>
+// <div  className="basis -3/5 ml-20  flex flex-col justify-center">
+//       {/* <label className="text-m">Faculty Id</label>
+//         <br/>
+//             <input type="text" placeholder="Enter your id" 
+//             onChange={getId}
+//             className="border border-red-400 rounded"/> 
+//             <br/> */}
+//             <label className="text-m">Test Name</label>
+//         <br/>
+//             <input type="text" placeholder="Enter test name" 
+//             onChange={getTestName}
+//             className="border border-red-400 rounded"/> 
+//             <br/>
+          
+//             <label className="text-m">Subject</label>
+//             <br/>
+     
+//             <input type="text" placeholder="Enter your subject"   onChange={getSubject}
+//             className="border border-red-400 rounded"/>
+//             <br/>
+//             <br/><br/>
+//             <label className="text-m">Topic</label>
+//             <br/>
+     
+//             <input type="text" placeholder="Enter your topic"   onChange={getTopic}
+//             className="border border-red-400 rounded"/>
+//             <br/>
+//             <br/><br/>
+//             <label className="text-m">Number Of Questions</label>
+//             <br/>
+     
+//             <input type="text" placeholder="Enter no of questions"   onChange={getQuestion}
+//             className="border border-red-400 rounded"/>
+//             <br/>
+//             <br/><br/>
+//             {/* <label>Difficulty Label</label>
+//             <select
+//         className="block appearance-none w-full bg-white border border-gray-400 hover:border-gray-500 px-4 py-2 pr-8 rounded shadow leading-tight focus:outline-none focus:shadow-outline"
+//         value={selectedOption}
+//         onChange={handleChange} >
+//         <option value="" disabled>Select Difficulty</option>
+//         <option value="easy">Easy</option>
+//         <option value="medium">Medium</option>
+//         <option value="hard">Hard</option>
+//       </select> */}
+//             <button 
+//             onClick = {handleCreateTest}
+//             type="submit"
+//              className="bg-red-400 text-white rounded px-2 mt-4 "
+//              >Create Test
+//              </button>
+//              {data}
+//     </div>
+//     </div>
+
+//   )
+// }
+
+// export default CreateTest
 
 
 

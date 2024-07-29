@@ -6,6 +6,7 @@ function AttemptingTest() {
     const [data, setData] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null); 
+    const [appear,setAppear] = useState(false)
     const success=()=>{
       alert("successfully submitted")
     }
@@ -25,7 +26,8 @@ function AttemptingTest() {
     
         fetchData();
       }, []); 
-  return (<div>
+
+ return <div>
     <div>
         {data.map(each=><div><p>{each.QuestionName}</p>
         <textarea cols="12" rows="1"  className="border border-gray-300 rounded-md p-2 focus:outline-none focus:border-blue-500 "></textarea></div>)} 
@@ -37,7 +39,8 @@ function AttemptingTest() {
             >Submit Answers
             </button>
     </div>
-  )
+
+  
 }
 
 export default AttemptingTest

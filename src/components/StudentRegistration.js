@@ -15,7 +15,7 @@ function StudentRegistration() {
     e.preventDefault();
     try {
       const response = await axios.post("http://172.17.15.186:3006/sregister", {
-        faculty_id : fact,
+        faculty_id : fact[0],
         student_id: roll,
         userName: name,
       });

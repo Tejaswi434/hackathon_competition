@@ -21,8 +21,9 @@ function Facultylogin({ handleShow }) {
     try {
       const response = await axios.post("http://172.17.15.186:3006/login", { id, password });
       if (response.status === 200) {
+        console.log(response)
         handleShow(id);
-        console.log("LOgin successfull")
+        console.log("Login successfull")
         // navigate("/facultydashboard")
         // navigate("/layout")
       } else {
@@ -44,10 +45,10 @@ function Facultylogin({ handleShow }) {
           />
         </div>
         <div className="md:basis-1/2 p-8 md:p-12">
-          <h2 className="text-2xl font-bold text-gray-800 mb-6">Faculty Login</h2>
+          <h2 className="text-2xl font-bold text-gray-800 mb-6">User Login</h2>
           <form onSubmit={(e) => { e.preventDefault(); validate(); }}>
             <div className="mb-4">
-              <label className="block text-gray-700 mb-2">Faculty Id</label>
+              <label className="block text-gray-700 mb-2">User Name</label>
               <input
                 type="text"
                 placeholder="Enter your ID"
